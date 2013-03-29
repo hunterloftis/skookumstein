@@ -6,6 +6,7 @@
   var RAY_DISTANCE = 1500;
   var RIGHT_ANGLE = Math.PI * 0.5;
 
+  var KEY_SHIFT = 16;
   var KEY_LEFT = 37;
   var KEY_UP = 38;
   var KEY_RIGHT = 39;
@@ -17,7 +18,8 @@
   var NO_DIVIDE_BY_ZERO = 0.00001;
 
   var TURN_SPEED = 0.1 * DEG_TO_RAD;
-  var WALK_SPEED = 0.4;
+  var WALK_SPEED = 0.1;
+  var RUN_SPEED = 0.5;
   var REVERSE_SPEED = 0.2;
 
   function Player() {
@@ -35,6 +37,7 @@
       this.turningLeft = false;
       this.turningRight = false;
       this.walking = false;
+      this.shifted = false;
       this.reversing = false;
       this.strafeLeft = false;
       this.strafeRight = false;
@@ -48,6 +51,7 @@
       $(window)
         .on('keydown', function(e) {
           switch(e.which) {
+            case KEY_SHIFT: self.shifted = true; break;
             case KEY_LEFT: self.turningLeft = true; break;
             case KEY_RIGHT: self.turningRight = true; break;
             case KEY_UP: self.walking = true; break;
@@ -60,6 +64,7 @@
         })
         .on('keyup', function(e) {
           switch(e.which) {
+            case KEY_SHIFT: self.shifted = false; break;
             case KEY_LEFT: self.turningLeft = false; break;
             case KEY_RIGHT: self.turningRight = false; break;
             case KEY_UP: self.walking = false; break;
@@ -82,12 +87,13 @@
     },
 
     step: function(time) {
-      var dx, dy;
+      var dx, dy,
+          moveSpeed = this.shifted ? RUN_SPEED : WALK_SPEED;
       if (this.turningLeft) this.angle -= TURN_SPEED * time;
       if (this.turningRight) this.angle += TURN_SPEED * time;
       if (this.walking) {
-        dx = Math.cos(this.angle) * WALK_SPEED * time;
-        dy = Math.sin(this.angle) * WALK_SPEED * time;
+        dx = Math.cos(this.angle) * moveSpeed * time;
+        dy = Math.sin(this.angle) * moveSpeed * time;
         this.x += dx;
         this.y += dy;
       }
